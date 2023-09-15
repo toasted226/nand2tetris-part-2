@@ -1,0 +1,45 @@
+class Player {
+    field int playerX, playerY, playerSize;
+
+    constructor Player new(int x, int y, int size) {
+        let playerX = x;
+        let playerY = y;
+        let playerSize = size;
+        do draw();
+        return this;
+    }
+
+    // Getters
+    method int getX() {
+        return playerX;
+    }
+    
+    method int getY() {
+        return playerY;
+    }
+
+    // Setters
+    method void setPos(int x, int y) {
+        playerX = x;
+        playerY = y;
+    }
+
+    // Methods
+    /** Draws the player to the screen */
+    method void draw() {
+        do Screen.setColor(true);
+        do Screen.drawRectangle(playerX, playerY, playerSize, playerSize);
+        return;
+    }
+
+    /** Erases the player from the screen by drawing off pixels */
+    method void erase() {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(playerX, playerY, playerSize, playerSize);
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}

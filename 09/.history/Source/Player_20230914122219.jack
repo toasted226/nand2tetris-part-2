@@ -1,0 +1,8 @@
+class Player {
+    field int player_x, player_y;
+
+    constructor Player new(int x, int y) {
+        player_x = x;
+        player_y = y;
+    }
+}

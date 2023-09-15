@@ -1,0 +1,24 @@
+class Player {
+    field int player_x, player_y;
+
+    constructor Player new(int x, int y) {
+        let player_x = x;
+        let player_y = y;
+        do draw();
+        return this;
+    }
+
+    method int getX() {
+        return player_x;
+    }
+
+    method void draw() {
+        do Screen.drawRectangle(player_x, player_y, 30, 30);
+        return;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}

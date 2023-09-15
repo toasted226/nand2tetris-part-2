@@ -1,0 +1,78 @@
+class Player {
+    field int x, y, size, speed;
+
+    constructor Player new(int px, int py, int psize, int pspeed) {
+        let x = px;
+        let y = py;
+        let size = psize;
+        let playerSpeed = speed;
+        do draw();
+        return this;
+    }
+
+    // Getters
+    method int getX() {
+        return playerX;
+    }
+    
+    method int getY() {
+        return playerY;
+    }
+
+    method int getSpeed() {
+        return playerSpeed;
+    }
+
+    // Setters
+    method void setPos(int x, int y) {
+        let playerX = x;
+        let playerY = y;
+        return;
+    }
+
+    // Methods
+    /** Draws the player to the screen */
+    method void draw() {
+        do Screen.setColor(true);
+        do Screen.drawRectangle(playerX, playerY, playerSize, playerSize);
+        return;
+    }
+
+    /** Erases the player from the screen by drawing off pixels */
+    method void erase() {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(playerX, playerY, playerSize, playerSize);
+        return;
+    }
+
+    method void moveUp() {
+        if (playerY > speed) {
+            do Screen.setColor(false);
+            do Screen.drawRectangle(playerX, playerY, playerSize, playerSize);
+
+            let playerY = playerY - speed;
+            do Screen.setColor(true);
+            do Screen.drawRectangle(playerX, playerY, playerSize, playerY + playerSize);
+        }
+
+        return;
+    }
+
+    method void moveDown() {
+        if ((playerY + playerSize) < (256 - speed)) {
+            do Screen.setColor(false);
+            do Screen.drawRectangle(playerX, playerY, playerSize, playerSize);
+
+            let playerY = playerY + speed;
+            do Screen.setColor(true);
+            do Screen.drawRectangle(playerX, playerY, playerSize, playerY + playerSize);
+        }
+
+        return;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}

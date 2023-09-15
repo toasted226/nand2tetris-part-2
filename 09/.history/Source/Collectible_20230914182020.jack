@@ -1,0 +1,7 @@
+class Collectible {
+    field int x, y, size;
+
+    constructor Collectible new(int cx, int cy, int csize) {
+        
+    }
+}

@@ -1,0 +1,8 @@
+class Game {
+    field Player player;
+
+    constructor Game new() {
+        let player = Player.new();
+        return this;
+    }
+}

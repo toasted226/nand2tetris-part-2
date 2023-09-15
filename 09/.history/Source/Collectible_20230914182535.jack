@@ -1,0 +1,15 @@
+class Collectible {
+    field int x, y, size;
+
+    constructor Collectible new(int cx, int cy, int csize) {
+        let x = cx;
+        let y = cy;
+        let size = csize;
+        return this;
+    }
+
+    method void draw() {
+        Screen.setColor(true);
+        Screen.drawCircle();
+    }
+}

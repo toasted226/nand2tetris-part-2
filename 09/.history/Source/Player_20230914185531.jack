@@ -1,0 +1,98 @@
+class Player {
+    field int x, y, size, speed;
+
+    constructor Player new(int px, int py, int psize, int pspeed) {
+        let x = px;
+        let y = py;
+        let size = psize;
+        let speed = pspeed;
+        do draw();
+        return this;
+    }
+
+    // Getters
+    method int getX() {
+        return x;
+    }
+    
+    method int getY() {
+        return y;
+    }
+
+    method int getSpeed() {
+        return speed;
+    }
+
+    // Setters
+    method void setPos(int nx, int ny) {
+        let x = nx;
+        let y = ny;
+        return;
+    }
+
+    // Methods
+    /** Draws the player to the screen */
+    method void draw() {
+        do Screen.setColor(true);
+        do Screen.drawRectangle(x, y, x + size, y + size);
+        return;
+    }
+
+    /** Erases the player from the screen by drawing off pixels */
+    method void erase() {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(x, y, x + size, y + size);
+        return;
+    }
+
+    method void moveUp() {
+        if (y > speed) {
+            do erase();
+            do setPos(x, y - speed);
+            do draw();
+        }
+
+        return;
+    }
+
+    method void moveDown() {
+        if ((y + size) < (256 - speed)) {
+            // do erase();
+            do Screen.setColor(false);
+            do Screen.drawRectangle(x, y, );
+            do setPos(x, y + speed);
+            do draw();
+        }
+
+        return;
+    }
+
+    method void moveLeft() {
+        if (x > speed) {
+            // do erase();
+            do Screen.setColor(false);
+            do Screen.drawRectangle(x + size - speed, y, x + size, y + size);
+            do setPos(x - speed, y);
+            do draw();
+        }
+
+        return;
+    }
+
+    method void moveRight() {
+        if ((x + size) < (512 - speed)) {
+            // do erase();
+            do Screen.setColor(false);
+            do Screen.drawRectangle(x, y, x + speed, y + size);
+            do setPos(x + speed, y);
+            do draw();
+        }
+
+        return;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}

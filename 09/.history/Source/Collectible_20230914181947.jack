@@ -1,0 +1,3 @@
+class Collectible {
+    field int x, y, size;
+}

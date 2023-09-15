@@ -1,0 +1,9 @@
+class Player {
+    field int player_x, player_y;
+
+    constructor Player new(int x, int y) {
+        let player_x = x;
+        let player_y = y;
+        return this;
+    }
+}

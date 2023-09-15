@@ -1,0 +1,18 @@
+class Game {
+    field Player player;
+
+    constructor Game new() {
+        let player = Player.new(0, 0);
+        return this;
+    }
+
+    method void run() {
+        return;
+    }
+
+    method void dispose() {
+        do player.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+}

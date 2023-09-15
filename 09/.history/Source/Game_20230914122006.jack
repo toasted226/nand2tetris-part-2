@@ -1,0 +1,8 @@
+class Game {
+    field Player player;
+    field int player_x, player_y;
+
+    constructor Game new() {
+        
+    }
+}
