@@ -1,0 +1,279 @@
+class Player {
+    field int x, y, size, speed, direction, segmentCount;
+    field bool dead;
+    field Food food;
+    field Array segments;
+
+    constructor Player new(int px, int py, int psize, int pspeed, int pdirection) {
+        let x = px;
+        let y = py;
+        let size = psize;
+        let speed = pspeed;
+        let direction = pdirection;
+        let food = 0;
+        let dead = false;
+        do draw();
+
+        let segments = Array.new(50);
+        let segments[0] = this;
+        let segmentCount = 1;
+
+        return this;
+    }
+
+    // Getters
+    method int getX() {
+        return x;
+    }
+
+    method int getY() {
+        return y;
+    }
+
+    method int getSpeed() {
+        return speed;
+    }
+
+    method int getDirection() {
+        return direction;
+    }
+
+    // Setters
+    method void setPos(int nx, int ny) {
+        let x = nx;
+        let y = ny;
+        return;
+    }
+
+    method void setDirection(int ndirection) {
+        let direction = ndirection;
+        return;
+    }
+
+    method void setFood(Food nfood) {
+        let food = nfood;
+        return;
+    }
+
+    // Methods
+    /** Draws the player to the screen */
+    method void draw() {
+        do Screen.setColor(true);
+        do Screen.drawRectangle(x, y, x + size, y + size);
+        return;
+    }
+
+    /** Erases the player from the screen by drawing off pixels */
+    method void erase() {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(x, y, x + size, y + size);
+        return;
+    }
+
+    method void moveUp() {
+        var int oldX, oldY;
+        let oldX = x;
+        let oldY = y;
+
+        if (y > speed) {
+            // do erase();
+            do Screen.setColor(false);
+            do Screen.drawRectangle(x, y + size - speed, x + size, y + size);
+            do setPos(x, y - speed);
+            do draw();
+
+            do updateSegments(oldX, oldY);
+        } else {
+            do erase();
+            do setPos(x, 240 - speed);
+            do draw();
+
+            do updateSegments(oldX, oldY);
+        }
+
+        return;
+    }
+
+    method void moveDown() {
+        var int oldX, oldY;
+        let oldX = x;
+        let oldY = y;
+
+        if ((y + size) < (256 - speed)) {
+            // do erase();
+            do Screen.setColor(false);
+            do Screen.drawRectangle(x, y, x + size, y + speed);
+            do setPos(x, y + speed);
+            do draw();
+
+            do updateSegments(oldX, oldY);
+        } else {
+            do erase();
+            do setPos(x, speed + speed);
+            do draw();
+
+            do updateSegments(oldX, oldY);
+        }
+
+        return;
+    }
+
+    method void moveLeft() {
+        var int oldX, oldY;
+        let oldX = x;
+        let oldY = y;
+
+        if (x > speed) {
+            // do erase();
+            do Screen.setColor(false);
+            do Screen.drawRectangle(x + size - speed, y, x + size, y + size);
+            do setPos(x - speed, y);
+            do draw();
+            
+            do updateSegments(oldX, oldY);
+        } else {
+            do erase();
+            do setPos(496 - speed, y);
+            do draw();
+
+            do updateSegments(oldX, oldY);
+        }
+
+        return;
+    }
+
+    method void moveRight() {
+        var int oldX, oldY;
+        let oldX = x;
+        let oldY = y;
+        
+        if ((x + size) < (512 - speed)) {
+            // do erase();
+            do Screen.setColor(false);
+            do Screen.drawRectangle(x, y, x + speed, y + size);
+            do setPos(x + speed, y);
+            do draw();
+            
+            do updateSegments(oldX, oldY);
+        } else {
+            do erase();
+            do setPos(speed + speed, y);
+            do draw();
+
+            do updateSegments(oldX, oldY);
+        }
+
+        return;
+    }
+
+    /** Adds another segment to the array */
+    method void addSegment() {
+        var int dir, posX, posY;
+        var Player segment, lastSegment;
+        let lastSegment = segments[segmentCount - 1];
+        let dir = lastSegment.getDirection();
+
+        // Set segments position
+        if (dir = 1) {
+            let posX = x;
+            let posY = y + size;
+        }
+        if (dir = 2) {
+            let posX = x;
+            let posY = y - size;
+        }
+        if (dir = 3) {
+            let posX = x + size;
+            let posY = y;
+        }
+        if (dir = 4) {
+            let posX = x - size;
+            let posY = y;
+        }
+
+        // Create new segment instance
+        let segment = Player.new(posX, posY, size, speed, dir);
+        let segmentCount = segmentCount + 1;
+        let segments[segmentCount - 1] = segment;
+
+        return;
+    }
+
+    /** Updates position of segments */
+    method void updateSegments(int oldX, int oldY) {
+        var int i, newX, newY;
+        var Player currentSegment;
+        let i = 1;
+
+        if (~(food = 0)) {
+            do food.draw();
+        }
+        
+        do checkCollision();
+
+        while (i < segmentCount) {
+            let newX = oldX;
+            let newY = oldY;
+            let currentSegment = segments[i];
+            let oldX = currentSegment.getX();
+            let oldY = currentSegment.getY();
+
+            do currentSegment.erase();
+            do currentSegment.setPos(newX, newY);
+            do currentSegment.draw();
+
+            let i = i + 1;
+        }
+
+        return;
+    }
+
+    /** Check for collision */
+    method void checkCollision() {
+        var int fx, fy, randX, randY, i, px, py;
+        var Player current;
+
+        if (~(food = 0)) {
+            let fx = food.getX();
+            let fy = food.getY();
+
+            // Check for collision with food
+            if (x = (fx - 8) & y = (fy - 8)) {
+                do addSegment();
+                // Spawn new food
+                let randX = (Random.randRange(29) + 1) * 16 + 8;
+                let randY = (Random.randRange(13) + 1) * 16 + 8;
+                let food = Food.new(randX, randY, 5);
+            }
+        }
+
+        if (~dead) {
+            let i = 1;
+            while (i < segmentCount) {
+                let current = segments[i];
+                let px = current.getX();
+                let py = current.getY();
+                if (x = px & y = py) {
+                    let speed = 0;
+                    let direction = 0;
+                    do Output.printString("You lose!");
+                    let dead = true;
+                }
+                let i = i + 1;
+            }
+        }
+
+        return;
+    }
+
+    method void dispose() {
+        var int i;
+        let i = 0;
+        while (i < segmentCount) {
+            do Memory.deAlloc(segments[i]);
+            let i = i + 1;
+        }
+        do Memory.deAlloc(this);
+        return;
+    }
+}

@@ -1,0 +1,23 @@
+class List {
+    field int value;
+    field List next;
+
+    constructor List new(int val) {
+        let value = val;
+        let next = 0;
+        return this;
+    }
+
+    
+
+    // Setters
+    method void setValue(int val) {
+        let value = val;
+        return;
+    }
+
+    method void setNext(int list) {
+        let next = list;
+        return;
+    }
+}

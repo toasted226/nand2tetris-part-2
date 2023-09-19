@@ -1,0 +1,55 @@
+class Game {
+    field Player player;
+    field Food food;
+
+    constructor Game new() {
+        let player = Player.new(32, 32, 16, 16);
+        let food = Food.new(256, 128, 5);
+        return this;
+    }
+
+    method void run() {
+        var int key, direction;
+        var bool exit;
+        let exit = false;
+
+        // 0 = stationary
+        // 1 = up
+        // 2 = down
+        // 3 = left
+        // 4 = right
+        let direction = 4;
+
+        while(~exit) {
+            let key = Keyboard.keyPressed();
+            // if (key = 0) { let direction = 0; } // no keypress
+            if (key = 131 & ~(direction = 2)) { let direction = 1; } // up
+            if (key = 133 & ~(direction = 1)) { let direction = 2; } // down
+            if (key = 130 & ~(direction = 4)) { let direction = 3; } // left
+            if (key = 132 & ~(direction = 3)) { let direction = 4; } // right
+            if (key = 140) { let exit = true; } // esc
+
+            do movePlayer(direction);
+        }
+
+        return;
+    }
+
+    /** Moves the player in the given direction */
+    method void movePlayer(int direction) {
+        if (direction = 1) { do player.moveUp(); } // up
+        if (direction = 2) { do player.moveDown(); } // down
+        if (direction = 3) { do player.moveLeft(); } // left
+        if (direction = 4) { do player.moveRight(); } // right
+
+        // Delay the next movement
+        // do Sys.wait(80);
+        return;
+    }
+
+    method void dispose() {
+        do player.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+}

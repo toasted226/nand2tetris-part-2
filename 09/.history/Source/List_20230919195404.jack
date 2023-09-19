@@ -1,0 +1,4 @@
+class List {
+    field int value;
+    field List next;
+}

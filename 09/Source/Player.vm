@@ -1,5 +1,5 @@
 function Player.new 0
-push constant 4
+push constant 7
 call Memory.alloc 1
 pop pointer 0
 push argument 0
@@ -10,9 +10,16 @@ push argument 2
 pop this 2
 push argument 3
 pop this 3
+push argument 4
+pop this 4
+push constant 0
+pop this 5
 push pointer 0
 call Player.draw 1
 pop temp 0
+push pointer 0
+call List.new 1
+pop this 6
 push pointer 0
 return
 function Player.getX 0
@@ -30,6 +37,11 @@ push argument 0
 pop pointer 0
 push this 3
 return
+function Player.getDirection 0
+push argument 0
+pop pointer 0
+push this 4
+return
 function Player.setPos 0
 push argument 0
 pop pointer 0
@@ -37,6 +49,20 @@ push argument 1
 pop this 0
 push argument 2
 pop this 1
+push constant 0
+return
+function Player.setDirection 0
+push argument 0
+pop pointer 0
+push argument 1
+pop this 4
+push constant 0
+return
+function Player.setFood 0
+push argument 0
+pop pointer 0
+push argument 1
+pop this 5
 push constant 0
 return
 function Player.draw 0
@@ -76,9 +102,13 @@ call Screen.drawRectangle 4
 pop temp 0
 push constant 0
 return
-function Player.moveUp 0
+function Player.moveUp 2
 push argument 0
 pop pointer 0
+push this 0
+pop local 0
+push this 1
+pop local 1
 push this 1
 push this 3
 gt
@@ -112,12 +142,41 @@ pop temp 0
 push pointer 0
 call Player.draw 1
 pop temp 0
+push pointer 0
+push local 0
+push local 1
+call Player.updateSegments 3
+pop temp 0
+goto IF_END0
 label IF_FALSE0
+push pointer 0
+call Player.erase 1
+pop temp 0
+push pointer 0
+push this 0
+push constant 240
+push this 3
+sub
+call Player.setPos 3
+pop temp 0
+push pointer 0
+call Player.draw 1
+pop temp 0
+push pointer 0
+push local 0
+push local 1
+call Player.updateSegments 3
+pop temp 0
+label IF_END0
 push constant 0
 return
-function Player.moveDown 0
+function Player.moveDown 2
 push argument 0
 pop pointer 0
+push this 0
+pop local 0
+push this 1
+pop local 1
 push this 1
 push this 2
 add
@@ -151,12 +210,41 @@ pop temp 0
 push pointer 0
 call Player.draw 1
 pop temp 0
+push pointer 0
+push local 0
+push local 1
+call Player.updateSegments 3
+pop temp 0
+goto IF_END0
 label IF_FALSE0
+push pointer 0
+call Player.erase 1
+pop temp 0
+push pointer 0
+push this 0
+push this 3
+push this 3
+add
+call Player.setPos 3
+pop temp 0
+push pointer 0
+call Player.draw 1
+pop temp 0
+push pointer 0
+push local 0
+push local 1
+call Player.updateSegments 3
+pop temp 0
+label IF_END0
 push constant 0
 return
-function Player.moveLeft 0
+function Player.moveLeft 2
 push argument 0
 pop pointer 0
+push this 0
+pop local 0
+push this 1
+pop local 1
 push this 0
 push this 3
 gt
@@ -190,12 +278,41 @@ pop temp 0
 push pointer 0
 call Player.draw 1
 pop temp 0
+push pointer 0
+push local 0
+push local 1
+call Player.updateSegments 3
+pop temp 0
+goto IF_END0
 label IF_FALSE0
+push pointer 0
+call Player.erase 1
+pop temp 0
+push pointer 0
+push constant 496
+push this 3
+sub
+push this 1
+call Player.setPos 3
+pop temp 0
+push pointer 0
+call Player.draw 1
+pop temp 0
+push pointer 0
+push local 0
+push local 1
+call Player.updateSegments 3
+pop temp 0
+label IF_END0
 push constant 0
 return
-function Player.moveRight 0
+function Player.moveRight 2
 push argument 0
 pop pointer 0
+push this 0
+pop local 0
+push this 1
+pop local 1
 push this 0
 push this 2
 add
@@ -229,14 +346,357 @@ pop temp 0
 push pointer 0
 call Player.draw 1
 pop temp 0
+push pointer 0
+push local 0
+push local 1
+call Player.updateSegments 3
+pop temp 0
+goto IF_END0
 label IF_FALSE0
+push pointer 0
+call Player.erase 1
+pop temp 0
+push pointer 0
+push this 3
+push this 3
+add
+push this 1
+call Player.setPos 3
+pop temp 0
+push pointer 0
+call Player.draw 1
+pop temp 0
+push pointer 0
+push local 0
+push local 1
+call Player.updateSegments 3
+pop temp 0
+label IF_END0
 push constant 0
 return
-function Player.dispose 0
+function Player.addSegment 8
 push argument 0
 pop pointer 0
+push this 6
+pop local 4
+label WHILE_EXP0
+push local 4
+call List.getNext 1
+push constant 0
+eq
+not
+not
+if-goto WHILE_END0
+push local 4
+call List.getNext 1
+pop local 4
+goto WHILE_EXP0
+label WHILE_END0
+push local 4
+call List.getValue 1
+pop local 7
+push local 7
+call Player.getDirection 1
+pop local 0
+push local 0
+push constant 1
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 0
+pop local 1
+push this 1
+push this 2
+add
+pop local 2
+label IF_FALSE0
+push local 0
+push constant 2
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push this 0
+pop local 1
+push this 1
+push this 2
+sub
+pop local 2
+label IF_FALSE1
+push local 0
+push constant 3
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push this 0
+push this 2
+add
+pop local 1
+push this 1
+pop local 2
+label IF_FALSE2
+push local 0
+push constant 4
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push this 0
+push this 2
+sub
+pop local 1
+push this 1
+pop local 2
+label IF_FALSE3
+push local 1
+push local 2
+push this 2
+push this 3
+push local 0
+call Player.new 5
+pop local 6
+push local 6
+call List.new 1
+pop local 5
+push local 4
+push local 5
+call List.setNext 2
+pop temp 0
+push constant 0
+return
+function Player.updateSegments 4
+push argument 0
+pop pointer 0
+push this 6
+pop local 2
+push this 5
+push constant 0
+eq
+not
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 5
+call Food.draw 1
+pop temp 0
+label IF_FALSE0
+push pointer 0
+call Player.checkCollision 1
+pop temp 0
+label WHILE_EXP0
+push local 2
+call List.getNext 1
+push constant 0
+eq
+not
+not
+if-goto WHILE_END0
+push local 2
+call List.getNext 1
+pop local 2
+push argument 1
+pop local 0
+push argument 2
+pop local 1
+push local 2
+call List.getValue 1
+pop local 3
+push local 3
+call Player.getX 1
+pop argument 1
+push local 3
+call Player.getY 1
+pop argument 2
+push local 3
+call Player.erase 1
+pop temp 0
+push local 3
+push local 0
+push local 1
+call Player.setPos 3
+pop temp 0
+push local 3
+call Player.draw 1
+pop temp 0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Player.checkCollision 9
+push argument 0
+pop pointer 0
+push this 5
+push constant 0
+eq
+not
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 5
+call Food.getX 1
+pop local 0
+push this 5
+call Food.getY 1
+pop local 1
+push this 0
+push local 0
+push constant 8
+sub
+eq
+push this 1
+and
+push local 1
+push constant 8
+sub
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push pointer 0
+call Player.addSegment 1
+pop temp 0
+push this 5
+call Food.dispose 1
+pop temp 0
+push constant 29
+call Random.randRange 1
+push constant 1
+add
+push constant 16
+call Math.multiply 2
+push constant 8
+add
+pop local 2
+push constant 13
+call Random.randRange 1
+push constant 1
+add
+push constant 16
+call Math.multiply 2
+push constant 8
+add
+pop local 3
+push local 2
+push local 3
+push constant 5
+call Food.new 3
+pop this 5
+label IF_FALSE1
+label IF_FALSE0
+push this 6
+call List.getNext 1
+pop local 8
+label WHILE_EXP0
+push local 8
+call List.getNext 1
+push constant 0
+eq
+not
+not
+if-goto WHILE_END0
+push local 8
+call List.getValue 1
+pop local 7
+push local 7
+call Player.getX 1
+pop local 5
+push local 7
+call Player.getY 1
+pop local 6
+push this 0
+push local 5
+eq
+push this 1
+and
+push local 6
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push constant 0
+pop this 3
+push constant 0
+pop this 4
+push constant 10
+call String.new 1
+push constant 89
+call String.appendChar 2
+push constant 111
+call String.appendChar 2
+push constant 117
+call String.appendChar 2
+push constant 32
+call String.appendChar 2
+push constant 108
+call String.appendChar 2
+push constant 111
+call String.appendChar 2
+push constant 115
+call String.appendChar 2
+push constant 101
+call String.appendChar 2
+push constant 33
+call String.appendChar 2
+push constant 32
+call String.appendChar 2
+call Output.printString 1
+pop temp 0
+label IF_FALSE2
+push local 8
+call List.getNext 1
+pop local 8
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Player.dispose 1
+push argument 0
+pop pointer 0
+push this 6
+pop local 0
+push local 0
+call List.getNext 1
+push constant 0
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
 push pointer 0
 call Memory.deAlloc 1
 pop temp 0
+push this 6
+call List.dispose 1
+pop temp 0
+label IF_FALSE0
+label WHILE_EXP0
+push local 0
+call List.getNext 1
+push constant 0
+eq
+not
+not
+if-goto WHILE_END0
+push local 0
+call List.getNext 1
+push constant 0
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push local 0
+call List.getValue 1
+call Memory.deAlloc 1
+pop temp 0
+push pointer 0
+call Player.dispose 1
+pop temp 0
+label IF_FALSE1
+push local 0
+call List.getNext 1
+pop local 0
+goto WHILE_EXP0
+label WHILE_END0
 push constant 0
 return

@@ -1,0 +1,170 @@
+class Player {
+    field int x, y, size, speed, direction, segmentCount;
+    field Array segments;
+
+    constructor Player new(int px, int py, int psize, int pspeed, int pdirection) {
+        let x = px;
+        let y = py;
+        let size = psize;
+        let speed = pspeed;
+        let direction = pdirection;
+        do draw();
+
+        let segments = Array.new(100);
+        let segments[0] = this;
+        let segmentCount = 1;
+
+        return this;
+    }
+
+    // Getters
+    method int getX() {
+        return x;
+    }
+
+    method int getY() {
+        return y;
+    }
+
+    method int getSpeed() {
+        return speed;
+    }
+
+    method int getDirection() {
+        return direction;
+    }
+
+    // Setters
+    method void setPos(int nx, int ny) {
+        let x = nx;
+        let y = ny;
+        return;
+    }
+
+    method void setDirection(int ndirection) {
+        let direction = ndirection;
+    }
+
+    // Methods
+    /** Draws the player to the screen */
+    method void draw() {
+        do Screen.setColor(true);
+        do Screen.drawRectangle(x, y, x + size, y + size);
+        return;
+    }
+
+    /** Erases the player from the screen by drawing off pixels */
+    method void erase() {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(x, y, x + size, y + size);
+        return;
+    }
+
+    method void moveUp() {
+        if (y > speed) {
+            // do erase();
+            do Screen.setColor(false);
+            do Screen.drawRectangle(x, y + size - speed, x + size, y + size);
+            do setPos(x, y - speed);
+            do draw();
+
+            do updateSegments();
+        }
+
+        return;
+    }
+
+    method void moveDown() {
+        if ((y + size) < (256 - speed)) {
+            // do erase();
+            do Screen.setColor(false);
+            do Screen.drawRectangle(x, y, x + size, y + speed);
+            do setPos(x, y + speed);
+            do draw();
+
+            do updateSegments();
+        }
+
+        return;
+    }
+
+    method void moveLeft() {
+        if (x > speed) {
+            // do erase();
+            do Screen.setColor(false);
+            do Screen.drawRectangle(x + size - speed, y, x + size, y + size);
+            do setPos(x - speed, y);
+            do draw();
+            
+            do updateSegments();
+        }
+
+        return;
+    }
+
+    method void moveRight() {
+        if ((x + size) < (512 - speed)) {
+            // do erase();
+            do Screen.setColor(false);
+            do Screen.drawRectangle(x, y, x + speed, y + size);
+            do setPos(x + speed, y);
+            do draw();
+            
+            do updateSegments();
+        }
+
+        return;
+    }
+
+    /** Adds another segment to the array */
+    method void addSegment() {
+        var int dir, posX, posY;
+        var Player segment;
+        let dir = segments[segmentCount - 1].getDirection();
+
+        // Set segments position
+        if (dir = 1) {
+            let posX = x;
+            let posY = y + size;
+        }
+        if (dir = 2) {
+            let posX = x;
+            let posY = y - size;
+        }
+        if (dir = 3) {
+            let posX = x - size;
+            let posY = y;
+        }
+        if (dir = 4) {
+            let posX = x + size;
+            let posY = y;
+        }
+
+        // Create new segment instance
+        let segment = Player.new(posX, posY, size, speed, dir);
+        let segments[segmentCount - 1] = segment;
+        segmentCount = segmentCount + 1;
+    }
+
+    /** Updates position of segments */
+    method void updateSegments() {
+        var int i, oldPosX, oldPosY, newPosX, newPosY;
+        let i = 0;
+
+        while (i < segmentCount) {
+            
+            let i = i + 1;
+        }
+    }
+
+    method void dispose() {
+        var int i;
+        let i = 0;
+        while (i < segmentCount) {
+            do Memory.deAlloc(segments[i]);
+            let i = i + 1;
+        }
+        do Memory.deAlloc(this);
+        return;
+    }
+}

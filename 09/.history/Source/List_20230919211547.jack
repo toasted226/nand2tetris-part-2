@@ -1,0 +1,59 @@
+class List {
+    field int value;
+    field List next;
+
+    constructor List new(int val) {
+        let value = val;
+        let next = 0;
+        return this;
+    }
+
+    // Getters
+    method int getValue() {
+        return value;
+    }
+
+    method List getNext() {
+        if (next = 0) {
+            return 0;
+        }
+        return next;
+    }
+
+    // Setters
+    method void setValue(int val) {
+        let value = val;
+        return;
+    }
+
+    method void setNext(int list) {
+        let next = list;
+        return;
+    }
+
+    // Methods
+    method bool hasNext() {
+        if (next = 0) {
+            return false;
+        }
+        return true;
+    }
+
+    method void dispose() {
+        var List nextList;
+        let nextList = this;
+
+        if (nextList.getNext() = 0) {
+            do Memory.deAlloc(this);
+        }
+
+        while (~(nextList.getNext() = 0)) {
+            if (nextSegment.getNext() = 0) {
+                do Memory.deAlloc(nextSegment);
+                do dispose();
+            }
+            let nextSegment = nextSegment.getNext();
+        }
+        return;
+    }
+}

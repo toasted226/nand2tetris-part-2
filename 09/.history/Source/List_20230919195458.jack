@@ -1,0 +1,6 @@
+class List {
+    field int value;
+    field List next;
+
+    constructor List new(int val);
+}
