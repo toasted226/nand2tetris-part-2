@@ -1,5 +1,5 @@
 use crate::tokenizer::{Keyword, Tokenizer, TokenType};
-use crate::tokenizer::TokenType::{Identifier, IntConst, StringConst, Symbol};
+use crate::tokenizer::TokenType::{Symbol, IntConst, StringConst, Identifier};
 
 pub struct CompilationEngine<'a> {
     parsed: String,
@@ -349,8 +349,17 @@ impl<'a> CompilationEngine<'a> {
             && self.tokenizer.symbol() == '[' {
             // [
             self.write_tag("symbol", "[");
+
+            // Check that next symbol is not ]
+            let token_type = self.tokenizer.token_type().unwrap();
+            if token_type == Symbol && self.tokenizer.symbol() == ']' {
+                panic!("Expected expression, found ']'");
+            }
+
             // expression
+            self.write_tag_open("expression");
             self.compile_expression();
+            self.write_tag_close("expression");
             // ]
             self.compile_symbol(']');
         }
@@ -359,7 +368,9 @@ impl<'a> CompilationEngine<'a> {
         self.compile_symbol('=');
 
         // expression
+        self.write_tag_open("expression");
         self.compile_expression();
+        self.write_tag_close("expression");
 
         // ;
         self.compile_symbol(';');
@@ -386,8 +397,16 @@ impl<'a> CompilationEngine<'a> {
         // (
         self.compile_symbol('(');
 
+        // Check that next symbol is not )
+        let token_type = self.tokenizer.token_type().unwrap();
+        if token_type == Symbol && self.tokenizer.symbol() == ')' {
+            panic!("Expected expression, found ')'");
+        }
+
         // expression
+        self.write_tag_open("expression");
         self.compile_expression();
+        self.write_tag_close("expression");
 
         // )
         self.compile_symbol(')');
@@ -444,8 +463,15 @@ impl<'a> CompilationEngine<'a> {
         // (
         self.compile_symbol('(');
 
+        let token_type = self.tokenizer.token_type().unwrap();
+        if token_type == Symbol && self.tokenizer.symbol() == ')' {
+            panic!("Expected expression, found ')'");
+        }
+
         // expression
+        self.write_tag_open("expression");
         self.compile_expression();
+        self.write_tag_close("expression");
 
         // )
         self.compile_symbol(')');
@@ -510,7 +536,9 @@ impl<'a> CompilationEngine<'a> {
         if token_type == Symbol && self.tokenizer.symbol() != ';'
             || token_type != Symbol {
             // expression
+            self.write_tag_open("expression");
             self.compile_expression();
+            self.write_tag_close("expression");
         }
 
         // ;
@@ -537,32 +565,30 @@ impl<'a> CompilationEngine<'a> {
         // (
         self.compile_symbol('(');
 
-        // expressionList
+        // expressionList open
         self.write_tag_open("expressionList");
-        self.compile_expression_list();
-        self.write_tag_close("expressionList");
 
-        // )
-        self.compile_symbol(')');
+        let token_type = self.tokenizer.token_type().unwrap();
+        if token_type == Symbol && self.tokenizer.symbol() == ')' {
+            // expressionList close
+            self.write_tag_close("expressionList");
+
+            // )
+            self.compile_symbol(')');
+        } else {
+            // expressionList
+            self.compile_expression_list();
+            self.write_tag_close("expressionList");
+            // )
+            self.compile_symbol(')');
+        }
     }
 
     fn compile_expression(&mut self) {
         // This should recurse at the end
-        // expression open
-        self.write_tag_open("expression");
-
         // term
         self.compile_term();
 
-        // (op term)*
-        self.compile_op_term();
-
-        // expression close
-        self.write_tag_close("expression");
-    }
-
-    fn compile_op_term(&mut self) {
-        // This should recurse at the end of the op branch
         // op?
         let token_type = self.tokenizer.token_type().expect("Expression: Failed to get token type");
         if token_type == Symbol {
@@ -579,18 +605,17 @@ impl<'a> CompilationEngine<'a> {
                 _ => return,
             }
 
-            // term
-            self.compile_term();
-
             // Recurse
-            self.compile_op_term();
+            self.compile_expression();
         }
     }
 
     fn compile_expression_list(&mut self) {
         // This should recurse at the end in the ',' branch
         // expression
+        self.write_tag_open("expression");
         self.compile_expression();
+        self.write_tag_close("expression");
 
         // ,?
         let token_type = self.tokenizer.token_type().expect("Expression List: Failed to get token type");
@@ -604,22 +629,34 @@ impl<'a> CompilationEngine<'a> {
     }
 
     fn compile_term(&mut self) {
-        // term open
-        self.write_tag_open("term");
-
         let token_type = self.tokenizer.token_type().expect("Term: Failed to get token type");
 
         if token_type == IntConst {
+            // term open
+            self.write_tag_open("term");
+
             // integerConstant
             let int_const = self.tokenizer.int_val().expect("Failed to parse int constant, type must be uint_16");
             self.write_tag("integerConstant", &int_const.to_string());
 
+            // term close
+            self.write_tag_close("term");
+
         } else if token_type == StringConst {
+            // term open
+            self.write_tag_open("term");
+
             // stringConstant
             let string_const = self.tokenizer.string_val().to_string();
             self.write_tag("stringConstant", &string_const);
 
+            // term close
+            self.write_tag_close("term");
+
         } else if token_type == TokenType::Keyword {
+            // term open
+            self.write_tag_open("term");
+
             // keywordConstant
             match self.tokenizer.keyword().unwrap() {
                 Keyword::True => self.write_tag("keyword", "true"),
@@ -629,7 +666,13 @@ impl<'a> CompilationEngine<'a> {
                 _ => panic!("Expected constant"),
             }
 
+            // term close
+            self.write_tag_close("term");
+
         } else if token_type == Identifier {
+            // term open
+            self.write_tag_open("term");
+
             // varName | varName [ expression ] | subroutineCall
             let identifier = self.tokenizer.identifier().to_string();
 
@@ -654,9 +697,17 @@ impl<'a> CompilationEngine<'a> {
                 // (
                 self.compile_symbol('(');
 
-                // expressionList
+                // expressionList open
                 self.write_tag_open("expressionList");
-                self.compile_expression_list();
+
+                let token_type = self.tokenizer.token_type().unwrap();
+                if token_type == Symbol && self.tokenizer.symbol() != ')'
+                    || token_type != Symbol {
+                    // expressionList
+                    self.compile_expression_list();
+                }
+
+                // expressionList close
                 self.write_tag_close("expressionList");
 
                 // )
@@ -671,7 +722,9 @@ impl<'a> CompilationEngine<'a> {
                 self.write_tag("symbol", "[");
 
                 // expression
+                self.write_tag_open("expression");
                 self.compile_expression();
+                self.write_tag_close("expression");
 
                 // ]
                 self.compile_symbol(']');
@@ -680,26 +733,41 @@ impl<'a> CompilationEngine<'a> {
                 self.write_tag_no_advance("identifier", &identifier);
             }
 
+            // term close
+            self.write_tag_close("term");
+
         } else if token_type == Symbol {
             // ( expression ) | unaryOp term
             let symbol = self.tokenizer.symbol();
             if symbol == '-' || symbol == '~' {
+                // term open
+                self.write_tag_open("term");
+
                 // unaryOp
                 self.write_tag("symbol", &symbol.to_string());
                 // term
                 self.compile_term();
+
+                // term close
+                self.write_tag_close("term");
+
             } else if symbol == '(' {
+                // term open
+                self.write_tag_open("term");
+
                 // (
                 self.write_tag("symbol", "(");
                 // expression
+                self.write_tag_open("expression");
                 self.compile_expression();
+                self.write_tag_close("expression");
                 // )
                 self.compile_symbol(')');
+
+                // term close
+                self.write_tag_close("term");
             }
         }
-
-        // term close
-        self.write_tag_close("term");
     }
 }
 
